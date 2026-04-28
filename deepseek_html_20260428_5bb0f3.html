@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeoken - 高效AI Token中转站 | 一站式API聚合服务</title>
+    <meta name="description" content="Pipeoken 提供 OpenAI、Claude、Gemini 等主流AI模型的API中转服务，稳定高速，按量计费，即开即用。">
+    <meta name="keywords" content="API中转,token中转,OpenAI代理,Claude API,Gemini中转,AI聚合API">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔗</text></svg>">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --primary-light: #EEF2FF;
+            --accent: #10B981;
+            --accent-light: #D1FAE5;
+            --dark: #1E293B;
+            --gray-900: #0F172A;
+            --gray-800: #1E293B;
+            --gray-700: #334155;
+            --gray-600: #475569;
+            --gray-500: #64748B;
+            --gray-400: #94A3B8;
+            --gray-300: #CBD5E1;
+            --gray-200: #E2E8F0;
+            --gray-100: #F1F5F9;
+            --gray-50: #F8FAFC;
+            --white: #FFFFFF;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07), 0 2px 4px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.1), 0 10px 10px rgba(0, 0, 0, 0.04);
+            --radius-sm: 6px;
+            --radius: 8px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+            --radius-2xl: 20px;
+            --transition: 0.2s ease;
+            --transition-slow: 0.35s ease;
+            --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono', 'Consolas', 'Monaco', monospace;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+            background: var(--gray-50);
+            color: var(--gray-800);
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* ========== 导航栏 ========== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(229, 231, 235, 0.6);
+            transition: all var(--transition);
+        }
+        .navbar.scrolled {
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.95);
+        }
+        .navbar-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+        }
+        .nav-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.35rem;
+            color: var(--gray-900);
+            letter-spacing: -0.3px;
+        }
+        .nav-logo .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: var(--gray-600);
+            font-weight: 500;
+            font-size: 0.925rem;
+            padding: 8px 16px;
+            border-radius: var(--radius);
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .nav-links a:hover {
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .nav-cta {
+            background: var(--primary) !important;
+            color: var(--white) !important;
+            padding: 10px 20px !important;
+            border-radius: var(--radius) !important;
+            font-weight: 600 !important;
+            transition: all var(--transition) !important;
+            box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+        }
+        .nav-cta:hover {
+            background: var(--primary-hover) !important;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35) !important;
+            transform: translateY(-1px);
+        }
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: var(--radius);
+            color: var(--gray-700);
+        }
+        .mobile-menu-btn:hover {
+            background: var(--gray-100);
+        }
+
+        /* ========== Hero ========== */
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(170deg, #F8FAFC 0%, #EEF2FF 40%, #E0E7FF 100%);
+            padding: 80px 24px 90px;
+            text-align: center;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 700px;
+            height: 700px;
+            background: radial-gradient(circle, rgba(79, 70, 229, 0.06) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+        .hero-inner {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: 50px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+        }
+        .hero-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%,
+            100% {
+                opacity: 1;
+                box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5);
+            }
+            50% {
+                opacity: 0.7;
+                box-shadow: 0 0 0 8px rgba(16, 185, 129, 0);
+            }
+        }
+        .hero h1 {
+            font-size: clamp(2.2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+        }
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, #4F46E5 0%, #8B5CF6 50%, #A855F7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p {
+            font-size: 1.15rem;
+            color: var(--gray-500);
+            max-width: 650px;
+            margin: 0 auto 36px;
+            line-height: 1.8;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1rem;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+            letter-spacing: 0.2px;
+        }
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+        }
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            box-shadow: 0 8px 24px rgba(79, 70, 229, 0.4);
+            transform: translateY(-2px);
+        }
+        .btn-outline {
+            background: var(--white);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-200);
+        }
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: var(--primary-light);
+        }
+        .btn-lg {
+            padding: 16px 34px;
+            font-size: 1.05rem;
+            border-radius: var(--radius-lg);
+        }
+        .hero-stats {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        .hero-stat {
+            text-align: center;
+        }
+        .hero-stat .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.5px;
+        }
+        .hero-stat .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-top: 2px;
+        }
+
+        /* ========== 通用区块 ========== */
+        .section {
+            padding: 80px 24px;
+        }
+        .section-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 56px;
+        }
+        .section-label {
+            display: inline-block;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--primary);
+            background: var(--primary-light);
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 16px;
+        }
+        .section-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            letter-spacing: -0.3px;
+            margin-bottom: 12px;
+        }
+        .section-header p {
+            color: var(--gray-500);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* ========== 特性卡片 ========== */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+            gap: 24px;
+        }
+        .feature-card {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: 32px 28px;
+            transition: all var(--transition-slow);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+            border-color: transparent;
+        }
+        .feature-card .feature-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 18px;
+            font-weight: 700;
+        }
+        .feature-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 8px;
+        }
+        .feature-card p {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            line-height: 1.7;
+        }
+
+        /* ========== 模型支持 ========== */
+        .models-section {
+            background: var(--white);
+            border-top: 1px solid var(--gray-100);
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .models-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .model-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            padding: 20px 18px;
+            text-align: center;
+            transition: all var(--transition);
+            cursor: default;
+        }
+        .model-card:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: var(--shadow-md);
+        }
+        .model-card .model-provider {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--primary);
+            margin-bottom: 6px;
+        }
+        .model-card .model-name {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+        .model-card .model-desc {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        .model-tag {
+            display: inline-block;
+            background: var(--accent-light);
+            color: #065F46;
+            font-size: 0.7rem;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 50px;
+            margin-top: 6px;
+        }
+
+        /* ========== 价格表 ========== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            align-items: stretch;
+        }
+        .pricing-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: 36px 28px;
+            text-align: center;
+            transition: all var(--transition-slow);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .pricing-card:hover {
+            box-shadow: var(--shadow-xl);
+            transform: translateY(-4px);
+        }
+        .pricing-card.recommended {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.08);
+            background: linear-gradient(180deg, #FFFFFF 0%, #EEF2FF 100%);
+        }
+        .pricing-card.recommended::before {
+            content: '🔥 推荐';
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary);
+            color: white;
+            font-size: 0.78rem;
+            font-weight: 700;
+            padding: 5px 16px;
+            border-radius: 50px;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        .pricing-card .plan-name {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+        .pricing-card .plan-desc {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 20px;
+        }
+        .pricing-card .plan-price {
+            font-size: 2.8rem;
+            font-weight: 800;
+            color: var(--gray-900);
+            letter-spacing: -1px;
+            margin-bottom: 4px;
+        }
+        .pricing-card .plan-price span {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--gray-500);
+        }
+        .pricing-card .plan-unit {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 24px;
+        }
+        .pricing-card ul {
+            list-style: none;
+            text-align: left;
+            margin-bottom: 28px;
+            flex-grow: 1;
+        }
+        .pricing-card ul li {
+            padding: 8px 0;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .pricing-card ul li:last-child {
+            border-bottom: none;
+        }
+        .pricing-card ul li .check {
+            color: var(--accent);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .pricing-card .btn {
+            width: 100%;
+            justify-content: center;
+            margin-top: auto;
+        }
+
+        /* ========== 文档/代码块 ========== */
+        .code-block-wrapper {
+            background: var(--gray-900);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-xl);
+            margin-top: 32px;
+        }
+        .code-block-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 20px;
+            background: #1a1f2e;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .code-dot.red {
+            background: #FF5F56;
+        }
+        .code-dot.yellow {
+            background: #FFBD2E;
+        }
+        .code-dot.green {
+            background: #27C93F;
+        }
+        .code-block-header .code-title {
+            margin-left: 8px;
+            font-size: 0.8rem;
+            color: #94A3B8;
+            font-family: var(--font-mono);
+        }
+        .code-block {
+            padding: 24px 20px;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: #E2E8F0;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .code-block .keyword {
+            color: #C084FC;
+        }
+        .code-block .string {
+            color: #34D399;
+        }
+        .code-block .comment {
+            color: #64748B;
+        }
+        .code-block .func {
+            color: #60A5FA;
+        }
+        .code-block .url {
+            color: #FBBF24;
+        }
+        .copy-btn {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #CBD5E1;
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.78rem;
+            font-family: inherit;
+            transition: all var(--transition);
+        }
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+        .copy-btn.copied {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* ========== CTA ========== */
+        .cta-section {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            text-align: center;
+            padding: 80px 24px;
+            border-radius: var(--radius-2xl);
+            margin: 0 24px;
+            max-width: 1280px;
+            margin-left: auto;
+            margin-right: auto;
+            color: white;
+        }
+        .cta-section h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+        .cta-section p {
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 28px;
+            font-size: 1.05rem;
+        }
+        .cta-section .btn {
+            background: white;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .cta-section .btn:hover {
+            background: #F1F5F9;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ========== FAQ ========== */
+        .faq-list {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            transition: all var(--transition);
+        }
+        .faq-item:hover {
+            border-color: var(--primary);
+            box-shadow: var(--shadow-md);
+        }
+        .faq-question {
+            width: 100%;
+            text-align: left;
+            background: none;
+            border: none;
+            padding: 20px 24px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-family: inherit;
+        }
+        .faq-question .faq-arrow {
+            flex-shrink: 0;
+            transition: transform var(--transition);
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        .faq-item.open .faq-arrow {
+            transform: rotate(180deg);
+            color: var(--primary);
+        }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height var(--transition-slow), padding var(--transition-slow);
+            padding: 0 24px;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            line-height: 1.8;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+            padding: 0 24px 20px;
+        }
+
+        /* ========== 页脚 ========== */
+        .footer {
+            background: var(--gray-900);
+            color: var(--gray-400);
+            padding: 48px 24px 32px;
+            margin-top: 80px;
+        }
+        .footer-inner {
+            max-width: 1280px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .footer-logo {
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: white;
+        }
+        .footer-links {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .footer-links a {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color var(--transition);
+        }
+        .footer-links a:hover {
+            color: white;
+        }
+        .footer-bottom {
+            max-width: 1280px;
+            margin: 24px auto 0;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.82rem;
+            color: var(--gray-500);
+        }
+
+        /* ========== 响应式 ========== */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            .nav-links.mobile-open {
+                display: flex;
+                flex-direction: column;
+                position: absolute;
+                top: 64px;
+                left: 0;
+                right: 0;
+                background: white;
+                padding: 16px;
+                border-bottom: 1px solid var(--gray-200);
+                box-shadow: var(--shadow-lg);
+                gap: 4px;
+            }
+            .mobile-menu-btn {
+                display: block;
+            }
+            .hero {
+                padding: 50px 16px 60px;
+            }
+            .hero-stats {
+                gap: 20px;
+            }
+            .hero-stat .stat-number {
+                font-size: 1.5rem;
+            }
+            .section {
+                padding: 50px 16px;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                max-width: 450px;
+                margin: 0 auto;
+            }
+            .cta-section {
+                margin: 0 16px;
+                padding: 50px 20px;
+                border-radius: var(--radius-xl);
+            }
+            .footer-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== 导航栏 ==================== -->
+    <nav class="navbar" id="navbar">
+        <div class="navbar-inner">
+            <a href="#" class="nav-logo">
+                <div class="logo-icon">P</div>
+                Pipeoken
+            </a>
+            <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="菜单">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">产品特性</a></li>
+                <li><a href="#models">支持模型</a></li>
+                <li><a href="#pricing">价格方案</a></li>
+                <li><a href="#docs">使用文档</a></li>
+                <li><a href="#faq">常见问题</a></li>
+                <li><a href="https://api.pipeoken.com/" target="_blank" class="nav-cta">🚀 进入控制台</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- ==================== Hero ==================== -->
+    <section class="hero">
+        <div class="hero-inner">
+            <div class="hero-badge">
+                <span class="dot"></span> 服务稳定运行中 · 99.9% SLA 保障
+            </div>
+            <h1>
+                一站式 <span class="gradient-text">AI Token</span> 中转服务
+            </h1>
+            <p>
+                Pipeoken 聚合 OpenAI、Claude、Gemini 等全球主流AI模型，
+                提供统一API接口，按量计费，即开即用。告别多平台管理，一键接入所有大模型。
+            </p>
+            <div class="hero-actions">
+                <a href="https://api.pipeoken.com/" target="_blank" class="btn btn-primary btn-lg">🎯 立即开始使用</a>
+                <a href="#docs" class="btn btn-outline btn-lg">📖 查看文档</a>
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="stat-number">30+</div>
+                    <div class="stat-label">支持模型</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">服务可用性</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">&lt;50ms</div>
+                    <div class="stat-label">平均延迟</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">活跃开发者</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 产品特性 ==================== -->
+    <section class="section" id="features">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-label">为什么选择我们</span>
+                <h2>强大、稳定、易用的API中转</h2>
+                <p>Pipeoken 让您专注于应用开发，无需操心底层API的复杂管理</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#EEF2FF;color:#4F46E5;">⚡</div>
+                    <h3>超低延迟</h3>
+                    <p>全球多节点加速，平均响应延迟低于50ms，确保您的应用流畅运行。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#D1FAE5;color:#10B981;">🔐</div>
+                    <h3>安全可靠</h3>
+                    <p>全链路HTTPS加密传输，支持IP白名单，API Key精细权限管控。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#FEF3C7;color:#F59E0B;">🔄</div>
+                    <h3>兼容OpenAI格式</h3>
+                    <p>完全兼容OpenAI SDK，只需替换Base URL即可无缝迁移，零改代码。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#FCE7F3;color:#EC4899;">📊</div>
+                    <h3>实时监控</h3>
+                    <p>提供详细的使用量统计、费用明细和调用日志，让每一分钱都花得明白。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#E0E7FF;color:#6366F1;">🎯</div>
+                    <h3>按量计费</h3>
+                    <p>用多少付多少，无月费无最低消费，充值余额永不过期。</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="background:#CFFAFE;color:#06B6D4;">💬</div>
+                    <h3>7×24 技术支持</h3>
+                    <p>专业团队全天候在线，快速响应您的技术问题与需求。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 支持模型 ==================== -->
+    <section class="section models-section" id="models">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-label">模型支持</span>
+                <h2>覆盖全球主流AI模型</h2>
+                <p>一个API Key，畅享所有大模型服务</p>
+            </div>
+            <div class="models-grid">
+                <div class="model-card">
+                    <div class="model-provider">OpenAI</div>
+                    <div class="model-name">GPT-4o</div>
+                    <div class="model-desc">最先进多模态模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">OpenAI</div>
+                    <div class="model-name">GPT-4o-mini</div>
+                    <div class="model-desc">轻量高效版本</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">OpenAI</div>
+                    <div class="model-name">o3-mini</div>
+                    <div class="model-desc">推理优化模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Anthropic</div>
+                    <div class="model-name">Claude 3.5 Sonnet</div>
+                    <div class="model-desc">深度推理与长文本</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Anthropic</div>
+                    <div class="model-name">Claude 3 Opus</div>
+                    <div class="model-desc">最强分析能力</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Google</div>
+                    <div class="model-name">Gemini 2.0 Flash</div>
+                    <div class="model-desc">极速响应模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Google</div>
+                    <div class="model-name">Gemini 1.5 Pro</div>
+                    <div class="model-desc">百万Token上下文</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">DeepSeek</div>
+                    <div class="model-name">DeepSeek-V3</div>
+                    <div class="model-desc">国产高性能模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">DeepSeek</div>
+                    <div class="model-name">DeepSeek-R1</div>
+                    <div class="model-desc">推理增强模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Meta</div>
+                    <div class="model-name">Llama 3.3 70B</div>
+                    <div class="model-desc">开源旗舰模型</div>
+                    <span class="model-tag">支持</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">Mistral</div>
+                    <div class="model-name">Mistral Large</div>
+                    <div class="model-desc">欧洲顶尖模型</div>
+                    <span class="model-tag">即将上线</span>
+                </div>
+                <div class="model-card">
+                    <div class="model-provider">更多</div>
+                    <div class="model-name">持续接入中...</div>
+                    <div class="model-desc">紧跟AI前沿</div>
+                    <span class="model-tag">敬请期待</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 价格方案 ==================== -->
+    <section class="section" id="pricing">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-label">价格方案</span>
+                <h2>透明、灵活、按量计费</h2>
+                <p>无隐藏费用，充值即用，余额永不过期</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- 免费试用 -->
+                <div class="pricing-card">
+                    <div class="plan-name">🆓 免费试用</div>
+                    <div class="plan-desc">新用户体验尝鲜</div>
+                    <div class="plan-price">¥0<span>/注册即送</span></div>
+                    <div class="plan-unit">赠送 5 元体验额度</div>
+                    <ul>
+                        <li><span class="check">✓</span> 所有模型均可测试</li>
+                        <li><span class="check">✓</span> 5元免费额度</li>
+                        <li><span class="check">✓</span> API文档访问</li>
+                        <li><span class="check">✓</span> 基础技术支持</li>
+                        <li><span class="check">✓</span> 7天有效期</li>
+                    </ul>
+                    <a href="https://api.pipeoken.com/" target="_blank" class="btn btn-outline">免费注册</a>
+                </div>
+                <!-- 按量付费 -->
+                <div class="pricing-card recommended">
+                    <div class="plan-name">💎 按量付费</div>
+                    <div class="plan-desc">最灵活的方式</div>
+                    <div class="plan-price">按模型<span>计费</span></div>
+                    <div class="plan-unit">充值任意金额，按实际用量扣费</div>
+                    <ul>
+                        <li><span class="check">✓</span> GPT-4o: ¥0.15/1M tokens</li>
+                        <li><span class="check">✓</span> GPT-4o-mini: ¥0.006/1M tokens</li>
+                        <li><span class="check">✓</span> Claude 3.5 Sonnet: ¥0.12/1M tokens</li>
+                        <li><span class="check">✓</span> Gemini 2.0 Flash: ¥0.008/1M tokens</li>
+                        <li><span class="check">✓</span> DeepSeek-V3: ¥0.01/1M tokens</li>
+                    </ul>
+                    <a href="https://api.pipeoken.com/" target="_blank" class="btn btn-primary">开始充值</a>
+                </div>
+                <!-- 企业定制 -->
+                <div class="pricing-card">
+                    <div class="plan-name">🏢 企业定制</div>
+                    <div class="plan-desc">大规模调用需求</div>
+                    <div class="plan-price">定制<span>报价</span></div>
+                    <div class="plan-unit">专属折扣与技术支持</div>
+                    <ul>
+                        <li><span class="check">✓</span> 专属折扣价格</li>
+                        <li><span class="check">✓</span> 独立资源池保障</li>
+                        <li><span class="check">✓</span> 99.99% SLA承诺</li>
+                        <li><span class="check">✓</span> 专属技术经理</li>
+                        <li><span class="check">✓</span> 私有化部署可选</li>
+                    </ul>
+                    <a href="mailto:support@pipeoken.com" class="btn btn-outline">联系商务</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 使用文档 ==================== -->
+    <section class="section" id="docs">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-label">使用文档</span>
+                <h2>三步接入，即刻开始</h2>
+                <p>兼容OpenAI SDK，替换Base URL即可无缝迁移</p>
+            </div>
+
+            <!-- 步骤1 -->
+            <h3 style="font-weight:700;margin-bottom:12px;color:var(--gray-900);">📋 第一步：获取API Key</h3>
+            <p style="color:var(--gray-500);margin-bottom:20px;">
+                访问 <a href="https://api.pipeoken.com/" target="_blank" style="color:var(--primary);font-weight:600;">api.pipeoken.com</a> 注册账号，
+                在控制台的「API Keys」页面创建密钥，复制保存。
+            </p>
+
+            <!-- 步骤2: 代码示例 -->
+            <h3 style="font-weight:700;margin-bottom:12px;color:var(--gray-900);">💻 第二步：配置并调用</h3>
+            <p style="color:var(--gray-500);margin-bottom:16px;">
+                Base URL 设置为 <code style="background:#EEF2FF;padding:3px 8px;border-radius:4px;font-family:var(--font-mono);color:var(--primary);">https://api.pipeoken.com/v1</code>
+            </p>
+
+            <!-- Python 示例 -->
+            <div class="code-block-wrapper">
+                <div class="code-block-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">Python 示例</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code-python')">📋 复制</button>
+                </div>
+                <div class="code-block" id="code-python">
+                    <span class="keyword">from</span> openai <span class="keyword">import</span> OpenAI
+
+                    <span class="comment"># 初始化客户端，指向 Pipeoken 中转站</span>
+                    client = OpenAI(
+                    <span class="string">"api_key"</span>: <span class="string">"your-pipeoken-api-key"</span>, <span class="comment"># 替换为你的API Key</span>
+                    <span class="string">"base_url"</span>: <span class="string">"https://api.pipeoken.com/v1"</span>
+                    )
+
+                    <span class="comment"># 调用 GPT-4o</span>
+                    response = client.chat.completions.create(
+                    <span class="string">"model"</span>: <span class="string">"gpt-4o"</span>,
+                    <span class="string">"messages"</span>: [
+                    {<span class="string">"role"</span>: <span class="string">"user"</span>, <span class="string">"content"</span>: <span class="string">"你好，请介绍一下自己"</span>}
+                    ]
+                    )
+
+                    <span class="func">print</span>(response.choices[0].message.content)
+                </div>
+            </div>
+
+            <!-- cURL 示例 -->
+            <div class="code-block-wrapper" style="margin-top:20px;">
+                <div class="code-block-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">cURL 示例</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code-curl')">📋 复制</button>
+                </div>
+                <div class="code-block" id="code-curl">
+                    curl <span class="url">https://api.pipeoken.com/v1/chat/completions</span> \
+                    -H <span class="string">"Content-Type: application/json"</span> \
+                    -H <span class="string">"Authorization: Bearer your-pipeoken-api-key"</span> \
+                    -d <span class="string">'{
+                        "model": "gpt-4o",
+                        "messages": [{"role": "user", "content": "你好！"}]
+                        }'</span>
+                </div>
+            </div>
+
+            <!-- Node.js 示例 -->
+            <div class="code-block-wrapper" style="margin-top:20px;">
+                <div class="code-block-header">
+                    <span class="code-dot red"></span>
+                    <span class="code-dot yellow"></span>
+                    <span class="code-dot green"></span>
+                    <span class="code-title">Node.js 示例</span>
+                    <button class="copy-btn" onclick="copyCode(this, 'code-node')">📋 复制</button>
+                </div>
+                <div class="code-block" id="code-node">
+                    <span class="keyword">import</span> OpenAI <span class="keyword">from</span> <span class="string">'openai'</span>;
+
+                    <span class="keyword">const</span> client = <span class="keyword">new</span> OpenAI({
+                    <span class="string">apiKey</span>: <span class="string">'your-pipeoken-api-key'</span>,
+                    <span class="string">baseURL</span>: <span class="string">'https://api.pipeoken.com/v1'</span>,
+                    });
+
+                    <span class="keyword">const</span> response = <span class="keyword">await</span> client.chat.completions.create({
+                    <span class="string">model</span>: <span class="string">'gpt-4o'</span>,
+                    <span class="string">messages</span>: [{ <span class="string">role</span>: <span class="string">'user'</span>, <span class="string">content</span>: <span class="string">'你好！'</span> }],
+                    });
+
+                    <span class="func">console</span>.<span class="func">log</span>(response.choices[0].message.content);
+                </div>
+            </div>
+
+            <!-- 步骤3 -->
+            <h3 style="font-weight:700;margin-top:32px;margin-bottom:12px;color:var(--gray-900);">📊 第三步：查看用量与账单</h3>
+            <p style="color:var(--gray-500);">
+                登录 Pipeoken 控制台，在「用量统计」页面实时查看Token消耗、费用明细及调用日志，
+                支持按模型、按时间维度筛选分析。
+            </p>
+        </div>
+    </section>
+
+    <!-- ==================== CTA ==================== -->
+    <div class="cta-section" style="margin-top:40px;">
+        <h2>准备好开始了吗？</h2>
+        <p>注册即送5元体验额度，即刻接入全球顶尖AI模型</p>
+        <a href="https://api.pipeoken.com/" target="_blank" class="btn btn-lg">🚀 免费注册 Pipeoken</a>
+    </div>
+
+    <!-- ==================== 常见问题 ==================== -->
+    <section class="section" id="faq">
+        <div class="section-inner">
+            <div class="section-header">
+                <span class="section-label">常见问题</span>
+                <h2>您可能想了解</h2>
+            </div>
+            <div class="faq-list">
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        Pipeoken 是什么？它如何工作？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        Pipeoken 是一个AI API中转服务平台。我们聚合了OpenAI、Anthropic、Google等多家AI厂商的API，
+                        您只需使用一个统一的API Key和Base URL，即可调用所有支持的模型。我们会自动将请求路由到对应的模型服务商，
+                        并按实际Token用量统一计费，极大简化了多模型接入的复杂度。
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        价格和官方API相比如何？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        我们的定价与各模型官方API价格基本持平或略低。对于企业大客户，我们还提供阶梯折扣。
+                        此外，通过Pipeoken您可以避免向多个平台分别充值，统一管理更便捷，且无需承担汇率波动风险。
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        数据安全如何保障？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        我们采用全链路HTTPS加密传输，不存储您的请求和响应内容（流式传输直接转发）。
+                        API Key支持IP白名单限制，您还可以在控制台随时轮换密钥。我们承诺不会将您的数据用于任何模型训练。
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        支持流式输出（Streaming）吗？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        完全支持。只需在请求中设置 <code>stream: true</code>，即可获得与官方API一致的SSE流式响应体验，
+                        所有模型均支持流式输出。
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        余额会过期吗？如何充值？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        账户余额永不过期。您可以在控制台通过微信支付、支付宝或对公转账进行充值，
+                        充值金额灵活，最低10元起充。企业客户支持月结后付费（需单独申请）。
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-question" onclick="toggleFaq(this)">
+                        如何联系技术支持？
+                        <span class="faq-arrow">▼</span>
+                    </button>
+                    <div class="faq-answer">
+                        您可以通过以下方式联系我们：<br>
+                        📧 邮箱：<a href="mailto:support@pipeoken.com" style="color:var(--primary);">support@pipeoken.com</a><br>
+                        💬 网站右下角在线客服（工作时间即时响应）<br>
+                        📖 控制台内提交工单
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==================== 页脚 ==================== -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">🔗 Pipeoken</div>
+            <div class="footer-links">
+                <a href="https://api.pipeoken.com/" target="_blank">控制台</a>
+                <a href="#docs">API文档</a>
+                <a href="#pricing">价格</a>
+                <a href="mailto:support@pipeoken.com">联系我们</a>
+                <a href="#">服务条款</a>
+                <a href="#">隐私政策</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            © 2024 Pipeoken. All rights reserved. 本站为AI API中转服务，与OpenAI/Anthropic/Google等公司无隶属关系。
+        </div>
+    </footer>
+
+    <script>
+        // 导航栏滚动阴影
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 10) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+
+        // 移动端菜单
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navLinks = document.getElementById('navLinks');
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('mobile-open');
+        });
+        // 点击链接关闭菜单
+        navLinks.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('mobile-open');
+            });
+        });
+
+        // FAQ折叠
+        function toggleFaq(btn) {
+            const item = btn.parentElement;
+            const isOpen = item.classList.contains('open');
+            // 关闭所有
+            document.querySelectorAll('.faq-item').forEach(el => el.classList.remove('open'));
+            // 如果之前没打开则打开
+            if (!isOpen) {
+                item.classList.add('open');
+            }
+        }
+
+        // 复制代码
+        function copyCode(btn, codeId) {
+            const codeBlock = document.getElementById(codeId);
+            const text = codeBlock.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                btn.textContent = '✅ 已复制';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 复制';
+                    btn.classList.remove('copied');
+                }, 2000);
+            }).catch(() => {
+                // 降级方案
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                btn.textContent = '✅ 已复制';
+                btn.classList.add('copied');
+                setTimeout(() => {
+                    btn.textContent = '📋 复制';
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
